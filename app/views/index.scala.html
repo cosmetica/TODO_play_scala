@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>TODO Lists</title>
+    <!-- CDN ZONE -->
+    <!-- script -->
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+		<!-- css -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+   
+  </head>
+  <body>
+    <section class="content">
+    OW YEAH Bro... We have things to do!
+     <button type="text" class="btn btn-primary" id="showAllTask">Show All Tasks</button>
+    </section>
+    <section>
+    <div style="width:60%; float: left;">
+	    	<table class="table table-striped" id="TODO_TABLE">
+			    <thead>
+	        	<tr>
+			    	<td style="width: 100px;">Status</td>
+			    	<td>Task</td>
+			    	<td>Options</td>
+			    </tr>
+			    </thead>
+			    <tbody>
+			    	
+			    </tbody>
+			</table>
+	</div>
+	<div style="width:29%;float:right;">
+		<div id="addForm" style="padding: 20px;width: 300px;margin: 0 auto;margin-top: 40px;background: white;
+								border-radius: 5px;">
+			<form>
+			<div id="formTODO">
+			  <div class="form-group">
+			    <label for="txtTaskSubject">Subjects</label>
+			    <input type="text" required class="form-control" id="txtTaskSubject" aria-describedby="emailHelp" placeholder="Enter your subject">
+			    
+			  </div>
+			  <div class="form-group">
+			    <label for="txtDetails">Details</label>
+			    <input type="text" required class="form-control" id="txtDetails" placeholder="Details here...">
+			  </div>
+			</div>  
+			</form>
+			 <button type="text" class="btn btn-primary" id="addToDoTask">Add Task</button>
+		</div>	
+	</div>
+	
+    </section>
+    <script>
+    $(document).ready(function(){
+    	//jQuery begin here
+    	getAllList();
+    	$("#showAllTask").click(function(){
+    		location.reload();
+    	});
+        $("#addToDoTask").click(function(){
+        	if($("#txtTaskSubject").val() == "" || $("#txtDetails").val() == "")
+        	{
+        		alert("Please do not let your textbox empty... Ya know!");
+        		return false;
+        	}
+        	if($("#addToDoTask").text() == "Edit!"){
+        		//alert("");
+        		var dataString = JSON.stringify({"todo_subject":$("#txtTaskSubject").val(),"todo_details":$("#txtDetails").val()});
+        		var taskId = $("body").data("id");
+	        	$.ajax({
+			        type: "PUT",
+			        url: "/todo/"+taskId,
+			        data: dataString,
+			        contentType: 'application/json; charset=utf-8',
+			        dataType: "json",
+			        success: function (data, status, jqXHR) {
+			            console.log(data);
+			             location.reload();
+			        },
+			     
+			        error: function (jqXHR, status) {
+			     		//console.log(status);
+			     		console.log(jqXHR.responseText);
+			        }     
+		     	});  
+        	}
+        	else{
+        		var dataString = JSON.stringify({"todo_subject":$("#txtTaskSubject").val(),"todo_details":$("#txtDetails").val()});
+        		console.log(dataString);
+			     $.ajax({
+			        type: "POST",
+			        url: "/todo",
+			        contentType: "application/json; charset=utf-8",
+			        data: dataString,
+			        dataType: "json",
+	  				contentType: "application/json",
+			        success: function (data, status, jqXHR) {
+			            console.log(data);
+			            $("#txtTaskSubject").val("") ;
+	        			$("#txtDetails").val("");
+						getAllList();
+			        },
+			     
+			        error: function (jqXHR, status) {
+			     		console.log(status);
+			     		console.log(jqXHR.responseText);
+			        }     
+		     	});    
+        	}
+        	 
+
+        });
+
+        function getAllList(){
+
+        	$('#TODO_TABLE tbody > tr').remove();
+        	$.ajax({
+            url: "/todo/viewAll",
+            type: "GET",
+            contentType: 'application/json; charset=utf-8',
+            success: function(resultData) {
+                console.log(resultData);
+
+                for(var i = 0;i<resultData.length;i++){
+                	var statusText = "";
+                	if(resultData[i].todo_status == "DONE"){
+                		statusText = "Make In Progress";
+                	}
+                	else
+                	{
+						statusText = "Make DONE";
+                	}
+                	$('#TODO_TABLE').find('tbody:last')
+                	.append(
+                		'<tr>' +
+					        '<td>' +
+					            '<span class="label label-success">'+resultData[i].todo_status+'</span> ' +
+					        '</td>' +
+					        '<td>' +
+					        	resultData[i].todo_subject +' <br/> ' + resultData[i].todo_details +
+					        '</td>' +
+					        '<td>' +
+					        '	<button class="btn view" data-button="'+resultData[i].todo_id+'"">View</button>' +
+					        '    <button class="btn edit" data-button="'+resultData[i].todo_id+'"">Edit</button>' +
+					        '    <button class="btn del" data-button="'+resultData[i].todo_id+'"">Delete</button>' +
+					        '    <button class="btn status" data-button="'+resultData[i].todo_id+','+resultData[i].todo_status+'" id="setDone'+resultData[i].todo_id+'">'+statusText+'</button>' +
+					        '</td>' +
+		    			'</tr>'
+                	);
+                }
+                // $('#TODO_TABLE').find('tbody:last')
+                // .append('<tr><td colspan="100%;">xxxxxxxxx</td></tr>');
+            },
+            error : function(jqXHR, textStatus, errorThrown) {
+            },
+            timeout: 120000,
+        });
+        //view
+        $("#TODO_TABLE").on('click', 'button.view', function(e) {
+	        	var taskId = $(this).attr('data-button');
+	        	$.ajax({
+			        type: "GET",
+			        url: "/todo/"+taskId,
+			        //data: dataString,
+			        contentType: 'application/json; charset=utf-8',
+			        dataType: "json",
+			        success: function (data, status, jqXHR) {
+			            //console.log(data);
+			            //alert("Task status change!");
+			            $("#formTODO").attr("style","border:3px solid red;")
+			            $("#txtTaskSubject").val(data.todo_subject) ;
+        				$("#txtDetails").val(data.todo_details);
+        				$("#addToDoTask").hide();
+			        },  
+		     	});  
+        });	
+        //edit
+        $("#TODO_TABLE").on('click', 'button.edit', function(e) {
+	        	var taskId = $(this).attr('data-button');
+	        	$.ajax({
+			        type: "GET",
+			        url: "/todo/"+taskId,
+			        //data: dataString,
+			        contentType: 'application/json; charset=utf-8',
+			        dataType: "json",
+			        success: function (data, status, jqXHR) {
+			            console.log(data);
+			            //alert("Task status change!");
+			            $("#formTODO").attr("style","border:1px solid red;")
+			            $("#txtTaskSubject").val(data.todo_subject) ;
+        				$("#txtDetails").val(data.todo_details);
+        				$("#addToDoTask").show();
+        				$("#addToDoTask").text("Edit!");
+        				$("body").data("id",data.todo_id)
+			        },
+			     
+			        error: function (jqXHR, status) {
+			     		//console.log(status);
+			     		console.log(jqXHR.responseText);
+			        }     
+		     	});  
+        });	
+        //delete
+        $("#TODO_TABLE").on('click', 'button.del', function(e) {
+        	if(confirm("Do you wanna delete me? T_T ")){
+	        	var taskId = $(this).attr('data-button');
+	        	$.ajax({
+			        type: "DELETE",
+			        url: "/todo/"+taskId,
+			        //data: dataString,
+			        contentType: 'application/json; charset=utf-8',
+			        dataType: "json",
+			        success: function (data, status, jqXHR) {
+			            console.log(data);
+			            //alert("Task status change!");
+			        },
+			     
+			        error: function (jqXHR, status) {
+			     		//console.log(status);
+			     		console.log(jqXHR.responseText);
+			        }     
+		     	});  
+	     	} 
+	     	location.reload();
+        });	
+        //set done or pending
+    	$("#TODO_TABLE").on('click', 'button.status', function(e) {
+		    //e.preventDefault();
+		    var taskId = $(this).attr('data-button');
+		    var data = taskId.split(",");
+
+		    if(data[1] == "PENDING"){
+		    	data[1] = "DONE";
+		    }
+		    else 
+		    {
+		    	data[1]  = "PENDING";
+		    }
+		    var dataString = JSON.stringify({"todo_id":parseInt(data[0]),"todo_status":data[1]});
+		    //alert(dataString);
+		    $.ajax({
+		        type: "POST",
+		        url: "/todo/makeDone",
+		        data: dataString,
+		        contentType: 'application/json; charset=utf-8',
+		        dataType: "json",
+		        success: function (data, status, jqXHR) {
+		            console.log(data);
+		            //alert("Task status change!");
+		           location.reload();
+		        },
+		     
+		        error: function (jqXHR, status) {
+		     		//console.log(status);
+		     		console.log(jqXHR.responseText);
+		        }     
+	     	});    
+
+		});
+    }
+
+	});
+    
+    </script>
+  </body>
+</html>
+ 

@@ -1,0 +1,74 @@
+GET/          todocontrollers.TodoController.index
+GET/          todo/$id<[^/]+>controllers.TodoController.get(id:Long)
+POST/         todocontrollers.TodoController.add
+DELETE/       todocontrollers.TodoController.removeAll
+DELETE/       todo/$id<[^/]+>controllers.TodoController.remove(id:Long)
+PATCH/        todo/$id<[^/]+>controllers.TodoController.update(id:Long)
+
+Content->TODO
+Install list
+backend with Play 2.5
+MySQL 5 -> DB Name 
+  Server: localhost:8889 »Database: playdb »Table: tb_todolist
+  --Script-- for create DB
+  -- phpMyAdmin SQL Dump
+-- version 4.4.10
+-- http://www.phpmyadmin.net
+--
+-- Host: localhost:8889
+-- Generation Time: May 16, 2017 at 04:06 PM
+-- Server version: 5.5.42
+-- PHP Version: 5.6.10
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
+--
+-- Database: `playdb`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tb_todolist`
+--
+
+CREATE TABLE `tb_todolist` (
+  `todo_id` smallint(6) NOT NULL,
+  `todo_subject` varchar(100) NOT NULL,
+  `todo_details` text NOT NULL,
+  `todo_status` varchar(8) NOT NULL,
+  `todo_is_delete` char(1) NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='add todo to this table';
+
+--
+-- Dumping data for table `tb_todolist`
+--
+
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `tb_todolist`
+--
+ALTER TABLE `tb_todolist`
+  ADD PRIMARY KEY (`todo_id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `tb_todolist`
+--
+ALTER TABLE `tb_todolist`
+  MODIFY `todo_id` smallint(6) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
+
+------------------------------------------------------------------------
+jQuery
+BootStrap
+
+
+Bootstrap

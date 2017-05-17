@@ -1,0 +1,13 @@
+machine:
+  java:
+    version: oraclejdk8
+dependencies:
+  override:
+    - ./activator update
+test:
+  override:
+    - ./activator test
+  post:
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - find . -type f -regex ".*/target/test-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+

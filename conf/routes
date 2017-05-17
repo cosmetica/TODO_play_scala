@@ -1,0 +1,9 @@
+GET           /todo            controllers.TodoController.index
+GET 		  /todo/viewAll    controllers.TodoController.viewAll
+GET           /todo/:id        controllers.TodoController.get(id:Long)
+POST          /todo            controllers.TodoController.add
+DELETE        /todo            controllers.TodoController.removeAll
+DELETE        /todo/:id        controllers.TodoController.remove(id:Long)
+PUT           /todo/:id       controllers.TodoController.update(id:Long)
+POST		  /todo/makeDone        controllers.TodoController.markDone
+
